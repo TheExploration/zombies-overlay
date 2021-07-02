@@ -1,0 +1,28 @@
+{
+  "name": "zombies-overlay",
+  "version": "1.1.3",
+  "description": "An overlay to show stats in pregame for zombies.",
+  "main": "app.js",
+  "build": {
+    "appId": "squidable.zombiesoverlay",
+    "productName": "Zombies Overlay"
+  },
+  "scripts": {
+    "test": "npm run build && npx electron ./app.js --test-mode",
+    "build": "",
+    "package": "npx electron-builder"
+  },
+  "author": "squidable",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "electron": "^12.0.2",
+    "electron-builder": "^22.10.5"
+  },
+  "dependencies": {
+    "electron-updater": "^4.3.8",
+    "minecraft-folder-path": "^1.2.0",
+    "minecraft-protocol": "^1.25.0",
+    "node-fetch": "^2.6.1",
+    "sha1": "^1.1.1"
+  }
+}
