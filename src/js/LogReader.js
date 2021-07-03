@@ -32,11 +32,19 @@ class LogReader extends EventEmitter {
 
     watch = () => {
         let lastLog = []
+        let changedLogs = []
         fs.watchFile(this.path, {persistent: true, interval: 4}, (curr, prev) => {
             const logFile = fs.readFileSync(this.path, {encoding: "utf8"})
 
             const logs = logFile.split("\n")
-            const changedLogs = (lastLog.length > logs.length) ? logs : logs.slice(lastLog.length)
+            if (lastLog.length > 0) {
+                for (let i = 0; i < logs.length; i++) {
+                    if (logs[i] != lastLog[i]) {
+                        changedLogs.push(logs[i])
+                    }
+                }
+            }
+
             lastLog = logs
             const interestedMsgs = changedLogs.filter(log => /\[[^]*\] \[Client thread\/INFO\]: \[CHAT\] [^]*/.test(log))
             for (const latestLog of interestedMsgs) {
