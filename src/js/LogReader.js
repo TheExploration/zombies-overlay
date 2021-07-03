@@ -15,6 +15,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+
 "use strict"
 
 const EventEmitter = require("events")
@@ -31,13 +32,11 @@ class LogReader extends EventEmitter {
 
     watch = () => {
         let lastLog = []
-        let logs = []
         let changedLogs = []
         fs.watchFile(this.path, {persistent: true, interval: 4}, (curr, prev) => {
             const logFile = fs.readFileSync(this.path, {encoding: "utf8"})
 
-            logs = logFile.split("\n")
-
+            const logs = logFile.split("\n")
             if (lastLog.length > 0) {
                 for (let i = 0; i < logs.length; i++) {
                     if (logs[i] != lastLog[i]) {
@@ -47,53 +46,27 @@ class LogReader extends EventEmitter {
             }
 
             lastLog = logs
-
-            for (const latestLog of changedLogs) {
-                if (/\[[^]*\] \[Client thread\/INFO\]: \[CHAT\] [^]*/.test(latestLog)) {
-                    const message = latestLog.split("[CHAT] ")[1].trim()
-
-                    if (/Sending you to (.*)!/.test(message)) {
-                        console.log(message)
-
-                        this.emit("server_change")
-                    }
+            const interestedMsgs = changedLogs.filter(log => /\[[^]*\] \[Client thread\/INFO\]: \[CHAT\] [^]*/.test(log))
+            for (const latestLog of interestedMsgs) {
+                const message = latestLog.split('[CHAT] ')[1].trim()
+                if (/Sending you to (.*)!/.test(message) || /(.*): -clear/.test(message)) {
+                    console.log(message)
+                    this.emit("server_change")
+                } else if (/(.*): -s (.*?)/.test(message)) {
+                    this.emit("join", message.split("-s ")[1])
+                } else {
+                    const parts = message.split(' ')
 
                     if (/(.*) joined \((\d)\/(\d)\)!/.test(message)) {
-                        const name = message.split(" ")[0]
-                        this.emit("join", name)
-                    }
-
-                    
-                    if (/ONLINE: (.*?)/.test(message)) {
+                        this.emit("join", parts[0])
+                    } else if (/ONLINE: (.*?)/.test(message)) {
                         this.emit("server_change")
-
-                        let length = message.split(' ')
-
-                       for (let i = 1; i < length.length; i++) {
-                            const name = message.split(" ")[i].replace(',', '')
-                            this.emit("join", name)
-                        }             
+                        parts.slice(1).forEach(msg => this.emit("", msg.replace(',', '')))
+                    } else if (/(.*) has quit!/.test(message)) {
+                        this.emit("leave", parts[0])
                     }
-                    if (/(.*): -clear/.test(message)) {
-                        this.emit("server_change")
-                    }
-		
-		    if (/(.*): -s (.*?)/.test(message)) {
-                        const name = message.split("-s ")[1]
-			this.emit("join", name)
-                    }	
-
-
-                    if (/(.*) has quit!/.test(message)) {
-                        const name = message.split(" ")[0]
-                        this.emit("leave", name)
-                    }
-
-
                 }
             }
-
-            changedLogs = []
         })
     }
 }
