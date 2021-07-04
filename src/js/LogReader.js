@@ -61,7 +61,7 @@ class LogReader extends EventEmitter {
                         this.emit("join", parts[0])
                     } else if (/ONLINE: (.*?)/.test(message)) {
                         this.emit("server_change")
-                        parts.slice(1).forEach(msg => this.emit("", msg.replace(',', '')))
+                        parts.slice(1).forEach(msg => this.emit("join", msg.replace(',', '')))
                     } else if (/(.*) has quit!/.test(message)) {
                         this.emit("leave", parts[0])
                     }
