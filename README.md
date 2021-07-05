@@ -3,7 +3,7 @@ Stats for Hypixel Zombies
 
 Original by [Zxnii](https://github.com/Zxnii/duels-overlay)
 
-Modified by me for Zombies
+Modified by [me](https://github.com/Squidable/zombies-overlay) for Zombies
 
 ### Installation
 1. Download the latest version from [releases](https://github.com/Squidable/Bridge-Duels-Overlay/releases)
