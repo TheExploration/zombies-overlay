@@ -74,13 +74,23 @@ class LogReader extends EventEmitter {
                             this.emit("join", name)
                         }             
                     }
+
                     if (/(.*): -clear/.test(message)) {
                         this.emit("server_change")
                     }
+
+                    if (/No player found with name c!/.test(message)) {
+                        this.emit("server_change")
+                    }
 		
-		    if (/(.*): -s (.*?)/.test(message)) {
+                    if (/(.*): -s (.*?)/.test(message)) {
                         const name = message.split("-s ")[1]
-			this.emit("join", name)
+                        this.emit("join", name)
+                    }	
+                    
+                    if (/That person hasn't invited you to be friends! (.*?)/.test(message)) {
+                        const name = message.split("Try /friend ")[1]
+                        this.emit("join", name)
                     }	
 
 

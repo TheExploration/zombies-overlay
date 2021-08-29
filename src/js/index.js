@@ -154,13 +154,13 @@ window.addEventListener("load", () => {
                         }
 
                         if (best_aa >= 100) {
-			    threatLevel += 3
+			                threatLevel += 3
                             best_aaThreat = 3
                         } else if (best_aa >= 70) {
                             threatLevel += 2
                             best_aaThreat = 2
                         } else if (best_aa >= 40) {
-                	    threatLevel++
+                	        threatLevel++
                             best_aaThreat = 1
                         }
 
