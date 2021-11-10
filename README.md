@@ -11,6 +11,7 @@ Modified by me for Zombies
 3. If using Lunar Client, Badlion or PvpLounge go in options and change the client.
 4. Once the overlay starts, get your api key from Hypixel with `/api new` and fill out the rest of the settings
 5. Save and go into a game, everything should just work after this point
+6. Only been tested on 1.8.9 and works for Vanilla, Forge, Optifine, Lunar, Badlion, and Pvplounge
 
 ### Usage
 1. Players' names will automatically go into the overlay if they join after you.
