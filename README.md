@@ -6,7 +6,7 @@ Original by [Zxnii](https://github.com/Zxnii/duels-overlay)
 Modified by me for Zombies
 
 ### Installation
-1. Download the latest version from [releases](https://github.com/Squidable/zombies-overlay/releases)
+1. Download the latest version from [releases](https://github.com/disagreeing/zombies-overlay/releases)
 2. Run the OverlaySetup.exe file
 3. If using Lunar Client, Badlion or PvpLounge go in options and change the client.
 4. Once the overlay starts, get your api key from Hypixel with `/api new` and fill out the rest of the settings
