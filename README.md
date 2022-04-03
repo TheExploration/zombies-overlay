@@ -15,6 +15,6 @@ Modified by me for Zombies
 
 ### Usage
 1. Players' names will automatically go into the overlay if they join after you.
-2. Type /f deny USERNAME in chat to add a specific player's stats to the overlay. (or -s USERNAME)
+2. Type /w USERNAME! in chat to add a specific player's stats to the overlay. (with a exclamation mark at the end)
 3. Type /who in chat to add stats from the players in your lobby to the overlay.
-4. Type /f c in chat to clear the stats. (or -clear)
+4. Type /w c in chat to clear the stats. (or -clear)
