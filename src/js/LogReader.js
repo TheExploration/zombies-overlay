@@ -79,7 +79,7 @@ class LogReader extends EventEmitter {
                         this.emit("server_change")
                     }
 
-                    if (/No player found with name c!/.test(message)) {
+                    if (/Can't find a player by the name of 'c'/.test(message)) {
                         this.emit("server_change")
                     }
 		
@@ -88,9 +88,14 @@ class LogReader extends EventEmitter {
                         this.emit("join", name)
                     }	
                     
-                    if (/That person hasn't invited you to be friends! (.*?)/.test(message)) {
-                        const name = message.split("Try /friend ")[1]
-                        this.emit("join", name)
+                    if (/Can't find a player by the name of (.*?)!/.test(message)) {
+                        const name = message.split("name of ")[1]
+                        this.emit("join", name.slice(1, -2)) // remove the '!'  
+                    }	
+
+                    if (/Can't find a player by the name of (.*?)-/.test(message)) {
+                        const name = message.split("name of ")[1]
+                        this.emit("leave", name.slice(1, -2)) // remove the '-'  
                     }	
 
 

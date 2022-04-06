@@ -133,8 +133,11 @@ window.addEventListener("load", () => {
                         const wins_bb = player.stats["Arcade"]["wins_zombies_badblood"] || 0
                         const wins_de = player.stats["Arcade"]["wins_zombies_deadend"] || 0
                         const kills = player.stats["Arcade"]["zombie_kills_zombies"] || 0
+                        const PB = (!isNaN(Math.round(player.stats["Arcade"]["fastest_time_30_zombies"] / 60))) 
+                            ? Math.round(player.stats["Arcade"]["fastest_time_30_zombies"] / 60)+" min"
+                            : "N/A"
                         const deaths = player.stats["Arcade"]["deaths_zombies"] || 0
-			const kdr = Math.round((kills / deaths) * 100) / 100 || kills
+		                const kdr = Math.round((kills / deaths) * 100) / 100 || kills
 
                         let threatLevel = 0
                         let winsThreat = 0
@@ -146,49 +149,46 @@ window.addEventListener("load", () => {
                         console.log(player.stats["Duels"])
                         
                         if (wins >= 100) {
+                            threatLevel += 3
                             winsThreat = 3
-                        } else if (wins >= 50) {            
+                        } else if (wins >= 30) {    
+                            threatLevel+= 2        
                             winsThreat = 2
-                        } else if (wins >= 3) {
+                        } else if (wins >= 2) {
+                            threatLevel++
                             winsThreat = 1
                         }
 
                         if (best_aa >= 100) {
-			                threatLevel += 3
+			                
                             best_aaThreat = 3
                         } else if (best_aa >= 70) {
-                            threatLevel += 2
+                            
                             best_aaThreat = 2
                         } else if (best_aa >= 40) {
-                	        threatLevel++
+                	        
                             best_aaThreat = 1
                         }
 
                         if (wins_bb >= 50) {
-                            threatLevel += 3
                             wins_bbThreat = 3
                         } else if (wins_bb >= 20) {
-                            threatLevel += 2
                             wins_bbThreat = 2
                         } else if (wins_bb >= 1) {
-                            threatLevel++
                             wins_bbThreat = 1
                         }
 
                         if (wins_de >= 50) {
-                            threatLevel += 3
                             wins_deThreat = 3
                         } else if (wins_de >= 20) {
-                            threatLevel += 2
                             wins_deThreat = 2
                         } else if (wins_de >= 1) {
-                            threatLevel++
                             wins_deThreat = 1
                         }
 
           
 
-                        const overallThreatLevel = Math.round(threatLevel/3)
+                        const overallThreatLevel = Math.round(threatLevel)
                         nameElement.innerHTML = ""
 
                         if (config.youTag && name == config.user) {
@@ -205,7 +205,7 @@ window.addEventListener("load", () => {
                         bwsElement.innerHTML = `<span style="color: ${colors[threatColors[wins_deThreat]]};">${wins_de}</span>` || "N/A"
                         wsElement.innerHTML = `<span style="color: ${colors["RED"]};">${kdr}</span>` || "N/A"
                         winElement.innerHTML = `<span style="color: ${colors["RED"]};">${kills}</span>`
-                        lossElement.innerHTML = `<span style="color: ${colors["RED"]};">${deaths}</span>`
+                        lossElement.innerHTML = `<span style="color: ${colors["RED"]};">${PB}</span>`
                         aimElement.innerHTML = `<span style="color: ${colors[threatColors[wins_bbThreat]]};">${wins_bb}</span>` || "N/A"
                     } else {
                         nameElement.innerHTML = `<span style="color: ${colors["RED"]};">${name} (NICKED)</span>`
