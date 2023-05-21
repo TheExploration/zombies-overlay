@@ -21,6 +21,8 @@ const path = require("path")
 const api = require("./js/api")
 const LogReader = require("./js/LogReader")
 const { shell } = require("electron")
+//FIX?
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const colors = {
     "DARK_RED": "#AA0000",

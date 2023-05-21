@@ -72,7 +72,7 @@ window.addEventListener("load", () => {
 
     lunarRadio.addEventListener("change", () => {
         if (lunarRadio.checked) {
-            mcDir.value = path.join(os.homedir(), "/.lunarclient/offline/1.8/logs").replaceAll("\\", "/")
+            mcDir.value = path.join(os.homedir(), "/.lunarclient/offline/multiver/logs").replaceAll("\\", "/")
             client = "lunar"
         }
     })
