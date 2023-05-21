@@ -5,6 +5,8 @@ Original by [Zxnii](https://github.com/Zxnii/duels-overlay)
 
 Modified by me for Zombies
 
+# [>> Download <<](https://github.com/TheExploration/zombies-overlay/releases/download/2.2/Zombies.Overlay.Setup.1.1.3.exe)
+
 ### Installation
 1. Download the latest version from [releases](https://github.com/TheExploration/zombies-overlay/releases)
 2. Run the OverlaySetup.exe file
