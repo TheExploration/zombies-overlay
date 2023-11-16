@@ -7,7 +7,7 @@ Stats for Hypixel Zombies
 
 Original by [Zxnii](https://github.com/Zxnii/duels-overlay)
 
-Modified by me for Zombies
+Modified by me for Zombies.
 
 ## [>> Download <<](https://github.com/TheExploration/zombies-overlay/releases/download/2.2/Zombies.Overlay.Setup.1.1.3.exe)
 
