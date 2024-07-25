@@ -8,6 +8,7 @@
     "productName": "Zombies Overlay"
   },
   "scripts": {
+    "start": "electron .",
     "test": "npm run build && npx electron ./app.js --test-mode",
     "build": "",
     "package": "npx electron-builder"
@@ -15,7 +16,7 @@
   "author": "squidable",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
-    "electron": "^12.0.2",
+    "electron": "^12.2.3",
     "electron-builder": "^22.10.5"
   },
   "dependencies": {
@@ -24,5 +25,6 @@
     "minecraft-protocol": "^1.25.0",
     "node-fetch": "^2.6.1",
     "sha1": "^1.1.1"
-  }
+  },
+  "keywords": []
 }

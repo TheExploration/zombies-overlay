@@ -5,9 +5,11 @@
 # zombies-overlay
 Stats for Hypixel Zombies
 
+This is an updated fork of Zombies overlay by [TheExploration] (https://github.com/TheExploration/zombies-overlay)
+
 Original by [Zxnii](https://github.com/Zxnii/duels-overlay)
 
-Modified by me for Zombies.
+Modified by me for to add the latest map aswell as migrate to a default API-key.
 
 ## [>> Download <<](https://github.com/TheExploration/zombies-overlay/releases/download/2.2/Zombies.Overlay.Setup.1.1.3.exe)
 

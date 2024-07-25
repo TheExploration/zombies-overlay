@@ -68,6 +68,7 @@ window.addEventListener("load", () => {
     } else {
         mcDir.value = mcPath.replaceAll("\\", "/")
         vanillaRadio.checked = true
+        apiKey.value = "ab3de178-fabc-4706-b4f9-4d516dac785c"
     }
 
     lunarRadio.addEventListener("change", () => {
