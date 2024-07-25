@@ -123,6 +123,11 @@ class HypixelAPI {
 
     getPlayer = async (uuid) => {
         const res = await fetch(`https://api.hypixel.net/player?key=${this.key}&uuid=${uuid}`)
+        
+        // Check if the API key is expired or invalid
+        if (res.status === 403) {
+            return { error: 'API_KEY_EXPIRED' };
+        }
 
         const body = await res.text()
         let json = {}
@@ -170,7 +175,7 @@ class HypixelAPI {
             json = JSON.parse(body)
         }
 
-        return json.status
+        return json.session
     }
 
     getLeaderboards = async () => {
