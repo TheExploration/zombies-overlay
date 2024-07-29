@@ -11,7 +11,7 @@ Original by [Zxnii](https://github.com/Zxnii/duels-overlay)
 
 Modified by me for to add the latest map aswell as migrate to a default API-key.
 
-## [>> Download <<](https://github.com/TheExploration/zombies-overlay/releases/download/2.2/Zombies.Overlay.Setup.1.1.3.exe)
+## [>> Download <<]([https://github.com/TheExploration/zombies-overlay/releases/download/2.2/Zombies.Overlay.Setup.1.1.3.exe](https://github.com/Rulol4/zombies-overlay/releases/tag/pre-release))
 
 ### Installation
 1. Download the latest version from [releases](https://github.com/TheExploration/zombies-overlay/releases)
