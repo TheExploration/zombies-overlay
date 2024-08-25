@@ -5,16 +5,14 @@
 # zombies-overlay
 Stats for Hypixel Zombies
 
-This is an updated fork of Zombies overlay by [TheExploration] (https://github.com/TheExploration/zombies-overlay)
-
 Original by [Zxnii](https://github.com/Zxnii/duels-overlay)
 
-Modified by me for to add the latest map aswell as migrate to a default API-key.
+Modified by me for Zombies.
 
-## [>> Download <<](https://github.com/Rulol4/zombies-overlay/releases/tag/pre-release)
+## [>> Download <<](https://github.com/TheExploration/zombies-overlay/releases/download/2.2/Zombies.Overlay.Setup.1.1.3.exe)
 
 ### Installation
-1. Download the latest version from [releases](https://github.com/Rulol4/zombies-overlay/releases/tag/pre-release)
+1. Download the latest version from [releases](https://github.com/TheExploration/zombies-overlay/releases)
 2. Run the OverlaySetup.exe file
 3. If using Lunar Client, Badlion or PvpLounge go in options and change the client.
 4. Save and go into a game, everything should just work after this point
