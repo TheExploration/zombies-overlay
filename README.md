@@ -14,12 +14,11 @@ Modified by me for to add the latest map aswell as migrate to a default API-key.
 ## [>> Download <<](https://github.com/Rulol4/zombies-overlay/releases/tag/pre-release)
 
 ### Installation
-1. Download the latest version from [releases](https://github.com/TheExploration/zombies-overlay/releases)
+1. Download the latest version from [releases](https://github.com/Rulol4/zombies-overlay/releases/tag/pre-release)
 2. Run the OverlaySetup.exe file
 3. If using Lunar Client, Badlion or PvpLounge go in options and change the client.
-4. Once the overlay starts, get your api key from Hypixel with `/api new` and fill out the rest of the settings
-5. Save and go into a game, everything should just work after this point
-6. Only been tested on 1.8.9 and works for Vanilla, Forge, Optifine, Lunar, Badlion, and Pvplounge
+4. Save and go into a game, everything should just work after this point
+5. Only been tested on 1.8.9 and works for Vanilla, Forge, Optifine, Lunar, Badlion, and Pvplounge
 
 ### Usage
 1. Players' names will automatically go into the overlay if they join after you.

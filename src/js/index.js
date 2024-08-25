@@ -83,6 +83,7 @@ window.addEventListener("load", () => {
     let config = {
         user: "",
         apiKey: "",
+        apiMode: "",
         minecraftPath: require("minecraft-folder-path")
     }
 
@@ -94,7 +95,13 @@ window.addEventListener("load", () => {
 
         console.log(config)
 
-        hypixelApi = new api.HypixelAPI(config.apiKey)
+        if (config.apiMode === "custom") {
+            apiKey = config.apiKey;
+        } else {
+            apiKey = "Hypixel-API-KEY";
+        }
+        
+        hypixelApi = new api.HypixelAPI(apiKey)
         logPath = path.join(config.minecraftPath, "latest.log")
 
         const logReader = new LogReader(logPath)
@@ -127,7 +134,7 @@ window.addEventListener("load", () => {
                     const player = res.player
                     console.log(player)
 
-                    // ====== Detect what map the player is currently playing ====== //
+                    // ====== Detect the map the player is currently playing ====== //
                     const status = await hypixelApi.getStatus(uuid);
                     const map = status?.map;
                     console.log(map);
