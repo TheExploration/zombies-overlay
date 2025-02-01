@@ -27,7 +27,7 @@ window.addEventListener("load", () => {
 
     const saveButton = document.querySelector("#options-save")
     const mcUser = document.querySelector("#mc-user")
-    const apiKey = document.querySelector("#api-key")
+    let apiKey = document.querySelector("#api-key")
     const mcDir = document.querySelector("#mc-dir")
     const appVer = document.querySelector("#app-ver")
     const electronVer = document.querySelector("#electron-ver")
@@ -39,8 +39,11 @@ window.addEventListener("load", () => {
     const nodejsVer = document.querySelector("#nodejs-ver")
     const proxyToggle = document.querySelector("#proxy")
     const proxyInfo = document.querySelector("#proxy-info")
-
+    const defaultAPIkeyRadio = document.querySelector("#default")
+    const customAPIkeyRadio = document.querySelector("#custom")
+    
     let client = "vanilla"
+    let apiMode = "default"
 
     const packageInfo = JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), {encoding: "utf8"}))
 
@@ -65,9 +68,16 @@ window.addEventListener("load", () => {
         lunarRadio.checked = (config.client || "vanilla") == "lunar"
         blcRadio.checked = (config.client || "vanilla") == "blc"
         loungeRadio.checked = (config.client || "vanilla") == "lounge"
+        
+        apiMode = config.apiMode || "default";
+        defaultAPIkeyRadio.checked = apiMode === "default";
+        customAPIkeyRadio.checked = apiMode === "custom";
+
     } else {
         mcDir.value = mcPath.replaceAll("\\", "/")
         vanillaRadio.checked = true
+        defaultAPIkeyRadio.checked = true
+        apiKey.value = "Replace this text by your API-key"
     }
 
     lunarRadio.addEventListener("change", () => {
@@ -105,6 +115,18 @@ window.addEventListener("load", () => {
         }
     })
 
+    defaultAPIkeyRadio.addEventListener("change", () => {
+        if (defaultAPIkeyRadio.checked) {
+            apiMode = "default"
+        }
+    })
+
+    customAPIkeyRadio.addEventListener("change", () => {
+        if (customAPIkeyRadio.checked) {
+            apiMode = "custom"
+        }
+    })
+
     saveButton.addEventListener("click", () => {
         fs.mkdirSync(folderPath, {recursive: true})
         fs.writeFileSync(configPath, JSON.stringify({
@@ -113,7 +135,8 @@ window.addEventListener("load", () => {
             minecraftPath: mcDir.value,
             youTag: youTag.checked,
             proxy: proxyToggle.checked,
-            client
+            client,
+            apiMode
         }, true, 4))
         window.location.href = "./index.htm"
     })
