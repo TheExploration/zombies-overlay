@@ -15,7 +15,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-const fs = require("fs")
+const fs = require("fs");
+
 const os = require("os")
 const path = require("path")
 const api = require("./js/api")
@@ -95,27 +96,30 @@ window.addEventListener("load", () => {
     // =====================
     //  Helper: load cache
     // =====================
-    function loadCache() {
+    async function loadCache() {
         if (!fs.existsSync(cachePath)) {
             return {}; // no cache file yet
         }
         try {
-            return JSON.parse(fs.readFileSync(cachePath, "utf8"));
+            const data = await fs.promises.readFile(cachePath, "utf8");
+            return JSON.parse(data);
         } catch (e) {
             console.error("Error reading cache file:", e);
             return {};
         }
     }
-    // ======================
-    // Helper: write to cache
-    // ======================
-    function saveCache(playerCache) {
+    async function saveCache(playerCache) {
         try {
-            fs.writeFileSync(cachePath, JSON.stringify(playerCache, null, 2), "utf8");
-        } catch (e) {
-            console.error("Error writing cache file:", e);
+          // Use fs.promises.writeFile (Node 10+)
+          await fs.promises.writeFile(
+            cachePath,
+            JSON.stringify(playerCache, null, 2),
+            "utf8"
+          );
+        } catch (err) {
+          console.error("Error writing cache file:", err);
         }
-    }
+      }
 
     if (fs.existsSync(folderPath)) {
         config = JSON.parse(fs.readFileSync(configPath, { encoding: "utf8" }))
@@ -139,13 +143,58 @@ window.addEventListener("load", () => {
                 element.remove()
             }
         })
+      
 
-        logReader.on("join", (name) => {
+
+        logReader.on("join", async (name) => {
+            let playerCache = await loadCache();
+            playerCache = await processPlayerJoin(name, playerCache);
+            await saveCache(playerCache);
+        });
+
+        logReader.on("batch", (names) => {
+            
+            
+            processJoinBatch(names);
+           
+        });
+
+        async function processJoinBatch(names) {
+                // Load the current cache once
+                let playerCache = await loadCache();
+                
+                // Process each player sequentially (you could also process in parallel if desired)
+                for (const name of names) {
+                    try {
+                        playerCache = await processPlayerJoin(name, playerCache);
+                    } catch (e) {
+                        console.error(`Error processing ${name}:`, e);
+                    }
+                }
+            await saveCache(playerCache);
+    
+        }
+
+        async function processPlayerJoin(name, playerCache) {
+            
             console.log(name)
-            let playerCache = loadCache();
+          
 
-            mcApi.getUuid(name).then(uuid => {
-                hypixelApi.getPlayer(uuid).then(async (res) => {
+
+            const uuid = await Promise.race([
+                mcApi.getUuid(name),
+                new Promise((_, reject) =>
+                setTimeout(() => reject(), 1000)
+                
+                )
+            ]);
+            const res = await Promise.race([
+                hypixelApi.getPlayer(uuid),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(), 1000)
+                )
+            ]);
+                
                     
                     // ====== check if API-KEY is valid ====== //
                     if (res.error === 'API_KEY_EXPIRED') {
@@ -161,11 +210,18 @@ window.addEventListener("load", () => {
                     }
                     
                     
-                    const player = res.player
+                    const player = res.player;
+                        
+                 
                     console.log(player)
 
                     // ====== Detect the map the player is currently playing ====== //
-                    const status = await hypixelApi.getStatus(uuid);
+                    const status = await Promise.race([
+                        hypixelApi.getStatus(uuid),
+                        new Promise((_, reject) =>
+                            setTimeout(() => reject(), 500)
+                        )
+                    ]);
                     const map = status?.map;
                     console.log(map);
 
@@ -354,7 +410,7 @@ window.addEventListener("load", () => {
 
                         };
                         playerCache[name] = statsObject;
-                        saveCache(playerCache);
+                  
 
                         
                         totalWinsElement.innerHTML = `<span style="color: ${colors[threatColors[winsThreat]]};">${wins}</span>` || "N/A"
@@ -365,7 +421,7 @@ window.addEventListener("load", () => {
                         personalBestElement.innerHTML = `<span style="color: ${colors["RED"]};">${fastestTime}</span>` || "N/A"
                         winsBadbloodElement.innerHTML = `<span style="color: ${colors[threatColors[wins_bbThreat]]};">${wins_bb}</span>` || "N/A"
                         winsPrisonElement.innerHTML = `<span style="color: ${colors[threatColors[wins_prThreat]]};">${wins_pr}</span>` || "N/A"
-
+                        
                     } else if (playerCache[name]) {
                         
                         const player = playerCache[name];
@@ -378,10 +434,55 @@ window.addEventListener("load", () => {
                         personalBestElement.innerHTML = `<span style="color: ${colors["RED"]};">${player.fastestTime}</span>` || "N/A"
                         winsBadbloodElement.innerHTML = `<span style="color: ${colors[threatColors[player.wins_bbThreat]]};">${player.wins_bb}</span>` || "N/A"
                         winsPrisonElement.innerHTML = `<span style="color: ${colors[threatColors[player.wins_prThreat]]};">${player.wins_pr}</span>` || "N/A"
+                        
+                    } else if (player) {
+                        if (config.youTag && name == config.user) {
+                            nameElement.innerHTML = `<span style="color: ${colors.AQUA};">[Y]</span> `
+                        }
 
+                        nameElement.innerHTML += `${ranks[player.monthlyPackageRank == "SUPERSTAR" ? "SUPERSTAR" : undefined || player.newPackageRank || "NON"].replaceAll("{plus_color}", `<span style="color: ${colors[player.rankPlusColor || "RED"]};">+</span>`)}${name}</span>`.replaceAll("{monthly_color}", player["monthlyRankColor"] || "GOLD")
+                        
+                        if (guild && guild.tag) {
+                            nameElement.innerHTML += ` <span style="color: ${colors[guild.tagColor] || colors["GRAY"]};">[${guild.tag}]</span>`
+                        }
+                        totalWinsElement.innerHTML = "N/A"
+                        bestAlienarcadiumRoundElement.innerHTML = "N/A"
+                        winsDeadendElement.innerHTML = "N/A"
+                        kdrElement.innerHTML = "N/A"
+                        killsElement.innerHTML = "N/A"
+                        personalBestElement.innerHTML = "N/A"
+                        winsBadbloodElement.innerHTML = "N/A"
+                        winsPrisonElement.innerHTML = "N/A"
+                        
+                        const statsObject = {
+                            name : name,
+                            uuid : uuid,
+                            monthlyPackageRank: player.monthlyPackageRank,
+                            newPackageRank: player.newPackageRank,
+                            monthlyRankColor: player["monthlyRankColor"],
+                            rankPlusColor: player.rankPlusColor,
+                            guildTag: guild?.tag,
+                            guildTagColor: guild?.tagColor,
+                            wins : 0,
+                            best_aa : 0,
+                            wins_bb : 0,
+                            wins_de : 0,
+                            wins_pr : 0,
+                            kills : 0,
+                            deaths : 0,
+                            kdr : 0,
+                            fastestTime : "N/A",
+                            winsThreat : 0,
+                            best_aaThreat : 0,
+                            wins_bbThreat : 0,
+                            wins_deThreat : 0,
+                            wins_prThreat : 0,
+
+                        };
+                        playerCache[name] = statsObject;
                     } else {
                         nameElement.innerHTML = `<span style="color: ${colors["RED"]};">${name} (NICKED)</span>`
-
+                        
                     }
 
                     
@@ -401,9 +502,9 @@ window.addEventListener("load", () => {
                     userList.append(userElement)
 
                     users.push(name)
-                })
-            })
-        })
+                    return playerCache;
+            
+        }
 
         logReader.on("leave", (name) => {
             const element = document.querySelector(`#user-${name}`)

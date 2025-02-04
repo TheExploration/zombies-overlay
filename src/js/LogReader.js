@@ -67,12 +67,14 @@ class LogReader extends EventEmitter {
                     if (/ONLINE: (.*?)/.test(message)) {
                         this.emit("server_change")
 
-                        let length = message.split(' ')
 
-                       for (let i = 1; i < length.length; i++) {
-                            const name = message.split(" ")[i].replace(',', '')
-                            this.emit("join", name)
-                        }             
+                         // Split the message into names (skip the first token if it isn’t a name)
+                        const names = message
+                        .split(' ')
+                        .slice(1)
+                        .map(name => name.replace(',', '').trim());
+                        console.log(names)
+                        this.emit("batch", names);
                     }
 
                     if (/(.*): -clear/.test(message)) {
