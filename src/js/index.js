@@ -129,7 +129,7 @@ window.addEventListener("load", () => {
         if (config.apiMode === "custom") {
             apiKey = config.apiKey;
         } else {
-            apiKey = "APIKEY";
+            apiKey = "API-KEY";
         }
         
         hypixelApi = new api.HypixelAPI(apiKey)
@@ -152,10 +152,8 @@ window.addEventListener("load", () => {
             await saveCache(playerCache);
         });
 
-        logReader.on("batch", (names) => {
-            
-            
-            processJoinBatch(names);
+        logReader.on("batch", async (names) => {
+            await processJoinBatch(names);
            
         });
 
