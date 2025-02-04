@@ -22,8 +22,9 @@ const process = require("process")
 const mcPath = path.join(require("minecraft-folder-path"), "logs")
 
 window.addEventListener("load", () => {
-    const folderPath = path.join(os.homedir(), "/duels_overlay")
+    const folderPath = path.join(os.homedir(), "/zombies_overlay")
     const configPath = path.join(folderPath, "config.json")
+    const cachePath = path.join(folderPath, "cache.json")
 
     const saveButton = document.querySelector("#options-save")
     const mcUser = document.querySelector("#mc-user")

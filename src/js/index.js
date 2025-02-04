@@ -71,8 +71,9 @@ window.addEventListener("load", () => {
 
     userList.style.visibility = "visible"
 
-    const folderPath = path.join(os.homedir(), "/duels_overlay")
+    const folderPath = path.join(os.homedir(), "/zombies_overlay")
     const configPath = path.join(folderPath, "config.json")
+    const cachePath = path.join(folderPath, "cache.json")
     const mcApi = new api.McAPI()
 
     let lastLog = []
@@ -90,6 +91,32 @@ window.addEventListener("load", () => {
     let hypixelApi
     let logPath = ""
 
+
+    // =====================
+    //  Helper: load cache
+    // =====================
+    function loadCache() {
+        if (!fs.existsSync(cachePath)) {
+            return {}; // no cache file yet
+        }
+        try {
+            return JSON.parse(fs.readFileSync(cachePath, "utf8"));
+        } catch (e) {
+            console.error("Error reading cache file:", e);
+            return {};
+        }
+    }
+    // ======================
+    // Helper: write to cache
+    // ======================
+    function saveCache(playerCache) {
+        try {
+            fs.writeFileSync(cachePath, JSON.stringify(playerCache, null, 2), "utf8");
+        } catch (e) {
+            console.error("Error writing cache file:", e);
+        }
+    }
+
     if (fs.existsSync(folderPath)) {
         config = JSON.parse(fs.readFileSync(configPath, { encoding: "utf8" }))
 
@@ -98,7 +125,7 @@ window.addEventListener("load", () => {
         if (config.apiMode === "custom") {
             apiKey = config.apiKey;
         } else {
-            apiKey = "Hypixel-API-KEY";
+            apiKey = "APIKEY";
         }
         
         hypixelApi = new api.HypixelAPI(apiKey)
@@ -115,6 +142,8 @@ window.addEventListener("load", () => {
 
         logReader.on("join", (name) => {
             console.log(name)
+            let playerCache = loadCache();
+
             mcApi.getUuid(name).then(uuid => {
                 hypixelApi.getPlayer(uuid).then(async (res) => {
                     
@@ -122,10 +151,11 @@ window.addEventListener("load", () => {
                     if (res.error === 'API_KEY_EXPIRED') {
                         const userElement = document.createElement("tr")
                         const errorElement = document.createElement("td")
-                        errorElement.innerHTML = `<span style="color: ${colors["RED"]};">API Key Expired. Please update your API key in the settings.)</span>`
+                        errorElement.innerHTML = `<span style="color: ${colors["RED"]};">API Key Expired. Please update your API key in the settings.</span>`
                         userElement.append(errorElement);
+                        userElement.className = "user"
+                        userElement.id = `user-${name}`
                         userList.append(userElement)
-
                         users.push(name)
                         return;
                     }
@@ -155,7 +185,6 @@ window.addEventListener("load", () => {
                     const kdrElement = document.createElement("td")
                     const killsElement = document.createElement("td")
                     const personalBestElement = document.createElement("td")
-                    const threatElement = document.createElement("td")
 
                     console.log(guild)
 
@@ -204,7 +233,9 @@ window.addEventListener("load", () => {
                                 fastestTime = validTimesBadblood.length > 0 ? `${Math.min(...validTimesBadblood)} min` : "N/A";
                               break;
                             case "Alien Arcadium":
-                                fastestTime = fastestTime = best_aa ? `R${best_aa}` : "N/A";
+                                fastestTime = (!isNaN(Math.round(player.stats["Arcade"]["fastest_time_30_zombies"] / 60))) 
+                                ? Math.round(player.stats["Arcade"]["fastest_time_30_zombies"] / 60)+" min"
+                                : "N/A"
                               break;
                             case "Prison":
                                 const timesPrisonSurvive= [
@@ -221,7 +252,9 @@ window.addEventListener("load", () => {
                                 // I was planning on also showing the fastest escape time however I couldn't find it in the API. I think its simply not in the API unless im blind
                               break;
                             default:
-                                fastestTime = "Unknown map: " + map
+                                fastestTime = (!isNaN(Math.round(player.stats["Arcade"]["fastest_time_30_zombies"] / 60))) 
+                                ? Math.round(player.stats["Arcade"]["fastest_time_30_zombies"] / 60)+" min"
+                                : "N/A"
                           }
 
                         let threatLevel = 0
@@ -232,7 +265,6 @@ window.addEventListener("load", () => {
                         let wins_prThreat = 0
                         
 
-                        console.log(player.stats["Duels"])
                         
                         if (wins >= 100) {
                             threatLevel += 3
@@ -251,7 +283,7 @@ window.addEventListener("load", () => {
                         } else if (best_aa >= 70) {
                             
                             best_aaThreat = 2
-                        } else if (best_aa >= 40) {
+                        } else if (best_aa >= 50) {
                 	        
                             best_aaThreat = 1
                         }
@@ -295,7 +327,36 @@ window.addEventListener("load", () => {
                             nameElement.innerHTML += ` <span style="color: ${colors[guild.tagColor] || colors["GRAY"]};">[${guild.tag}]</span>`
                         }
 
-                        threatElement.innerHTML = `<span style="color: ${colors[threatColors[overallThreatLevel]]}">${threatNames[overallThreatLevel]}</span>`
+                        
+                        const statsObject = {
+                            name : name,
+                            uuid : uuid,
+                            monthlyPackageRank: player.monthlyPackageRank,
+                            newPackageRank: player.newPackageRank,
+                            monthlyRankColor: player["monthlyRankColor"],
+                            rankPlusColor: player.rankPlusColor,
+                            guildTag: guild?.tag,
+                            guildTagColor: guild?.tagColor,
+                            wins : wins,
+                            best_aa : best_aa,
+                            wins_bb : wins_bb,
+                            wins_de : wins_de,
+                            wins_pr : wins_pr,
+                            kills : kills,
+                            deaths : deaths,
+                            kdr : kdr,
+                            fastestTime : fastestTime,
+                            winsThreat : winsThreat,
+                            best_aaThreat : best_aaThreat,
+                            wins_bbThreat : wins_bbThreat,
+                            wins_deThreat : wins_deThreat,
+                            wins_prThreat : wins_prThreat,
+
+                        };
+                        playerCache[name] = statsObject;
+                        saveCache(playerCache);
+
+                        
                         totalWinsElement.innerHTML = `<span style="color: ${colors[threatColors[winsThreat]]};">${wins}</span>` || "N/A"
                         bestAlienarcadiumRoundElement.innerHTML = `<span style="color: ${colors[threatColors[best_aaThreat]]};">${best_aa}</span>` || "N/A"
                         winsDeadendElement.innerHTML = `<span style="color: ${colors[threatColors[wins_deThreat]]};">${wins_de}</span>` || "N/A"
@@ -305,13 +366,25 @@ window.addEventListener("load", () => {
                         winsBadbloodElement.innerHTML = `<span style="color: ${colors[threatColors[wins_bbThreat]]};">${wins_bb}</span>` || "N/A"
                         winsPrisonElement.innerHTML = `<span style="color: ${colors[threatColors[wins_prThreat]]};">${wins_pr}</span>` || "N/A"
 
-                    } else {
+                    } else if (playerCache[name]) {
                         
+                        const player = playerCache[name];
+                        nameElement.innerHTML += `${ranks[player.monthlyPackageRank == "SUPERSTAR" ? "SUPERSTAR" : undefined || player.newPackageRank || "NON"].replaceAll("{plus_color}", `<span style="color: ${colors[player.rankPlusColor || "RED"]};">+</span>`)}${name}</span>`.replaceAll("{monthly_color}", player.monthlyRankColor || "GOLD")
+                        totalWinsElement.innerHTML = `<span style="color: ${colors[threatColors[player.winsThreat]]};">${player.wins}</span>` || "N/A"
+                        bestAlienarcadiumRoundElement.innerHTML = `<span style="color: ${colors[threatColors[player.best_aaThreat]]};">${player.best_aa}</span>` || "N/A"
+                        winsDeadendElement.innerHTML = `<span style="color: ${colors[threatColors[player.wins_deThreat]]};">${player.wins_de}</span>` || "N/A"
+                        kdrElement.innerHTML = `<span style="color: ${colors["RED"]};">${player.kdr}</span>` || "N/A"
+                        killsElement.innerHTML = `<span style="color: ${colors["RED"]};">${player.kills}</span>`
+                        personalBestElement.innerHTML = `<span style="color: ${colors["RED"]};">${player.fastestTime}</span>` || "N/A"
+                        winsBadbloodElement.innerHTML = `<span style="color: ${colors[threatColors[player.wins_bbThreat]]};">${player.wins_bb}</span>` || "N/A"
+                        winsPrisonElement.innerHTML = `<span style="color: ${colors[threatColors[player.wins_prThreat]]};">${player.wins_pr}</span>` || "N/A"
+
+                    } else {
                         nameElement.innerHTML = `<span style="color: ${colors["RED"]};">${name} (NICKED)</span>`
 
                     }
 
-                    userElement.append(threatElement)
+                    
                     userElement.append(nameElement)
                     userElement.append(totalWinsElement)
                     userElement.append(bestAlienarcadiumRoundElement)
